@@ -133,16 +133,30 @@ const ModernCompass = () => {
               <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-primary" />
+                    <MapPin className="h-4 w-4 text-primary animate-pulse" />
                     <span className="text-sm font-medium">Orientação Atual</span>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-ping" />
                   </div>
-                  <Badge variant="secondary" className="text-lg px-3 py-1">
+                  <Badge 
+                    variant="secondary" 
+                    className="text-lg px-3 py-1 transition-all duration-300 animate-pulse"
+                    style={{ 
+                      transform: `rotate(${heading * 0.5}deg)`,
+                      transition: 'transform 0.5s ease-out'
+                    }}
+                  >
                     {getCardinalDirection(heading)}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">
+                    <div 
+                      className="text-3xl font-bold text-primary transition-all duration-500 ease-out"
+                      style={{
+                        textShadow: `0 0 10px rgba(59, 130, 246, ${Math.abs(Math.sin(heading * Math.PI / 180)) * 0.5 + 0.3})`,
+                        transform: `scale(${1 + Math.abs(Math.sin(heading * Math.PI / 180)) * 0.1})`
+                      }}
+                    >
                       {Math.round(heading)}°
                     </div>
                     <div className="text-xs text-muted-foreground">
@@ -150,13 +164,36 @@ const ModernCompass = () => {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-accent">
+                    <div 
+                      className="text-lg font-semibold text-accent transition-all duration-300"
+                      style={{
+                        color: `hsl(${heading}, 70%, 50%)`
+                      }}
+                    >
                       {getCardinalDirectionFull(heading)}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       Direção
                     </div>
                   </div>
+                </div>
+                
+                {/* Barra de movimento visual */}
+                <div className="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
+                    style={{
+                      width: `${(heading / 360) * 100}%`,
+                      background: `linear-gradient(90deg, hsl(${heading}, 70%, 50%), hsl(${(heading + 60) % 360}, 70%, 60%))`
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>0°</span>
+                  <span className="font-medium">
+                    {((heading / 360) * 100).toFixed(1)}%
+                  </span>
+                  <span>360°</span>
                 </div>
               </div>
             )}

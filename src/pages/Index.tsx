@@ -1,4 +1,5 @@
 import SolarCalculator from '@/components/SolarCalculator';
+import Compass from '@/components/Compass';
 import solarHero from '@/assets/solar-hero.jpg';
 
 const Index = () => {
@@ -24,8 +25,11 @@ const Index = () => {
         </div>
       </div>
       
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 space-y-12">
         <SolarCalculator />
+        <div className="flex justify-center">
+          <Compass />
+        </div>
       </div>
     </div>
   );

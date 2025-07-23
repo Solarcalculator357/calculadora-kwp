@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Calculator, Sun, Zap, TrendingUp } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calculator, Sun, Zap, TrendingUp, Ruler } from 'lucide-react';
 
 interface CalculationResult {
   monthlyKwh: number;
@@ -15,11 +16,25 @@ interface CalculationResult {
   hsp: number;
 }
 
+interface DimensionResult {
+  totalModules: number;
+  requiredArea: number;
+  installationType: string;
+  moduleArea: number;
+  modulePower: number;
+}
+
 const SolarCalculator = () => {
   const [kwp, setKwp] = useState<string>('');
   const [hsp, setHsp] = useState<number[]>([5.5]); // Horas de Sol Pleno
   const [efficiency, setEfficiency] = useState<number[]>([85]); // Eficiência do sistema
   const [result, setResult] = useState<CalculationResult | null>(null);
+  
+  // Estados para cálculo de área
+  const [installationType, setInstallationType] = useState<string>('');
+  const [moduleArea, setModuleArea] = useState<string>('');
+  const [modulePower, setModulePower] = useState<string>('');
+  const [dimensionResult, setDimensionResult] = useState<DimensionResult | null>(null);
 
   const calculateConversion = () => {
     const kwpValue = parseFloat(kwp);
@@ -47,6 +62,39 @@ const SolarCalculator = () => {
     setResult(null);
     setHsp([5.5]);
     setEfficiency([85]);
+  };
+
+  const calculateDimension = () => {
+    const kwpValue = parseFloat(kwp);
+    const moduleAreaValue = parseFloat(moduleArea);
+    const modulePowerValue = parseFloat(modulePower);
+    
+    if (isNaN(kwpValue) || isNaN(moduleAreaValue) || isNaN(modulePowerValue) || 
+        kwpValue <= 0 || moduleAreaValue <= 0 || modulePowerValue <= 0 || !installationType) return;
+
+    // Converter kWp para Watts
+    const totalPowerWatts = kwpValue * 1000;
+    
+    // Calcular número de módulos necessários
+    const totalModules = Math.ceil(totalPowerWatts / modulePowerValue);
+    
+    // Calcular área necessária total
+    const requiredArea = totalModules * moduleAreaValue;
+
+    setDimensionResult({
+      totalModules,
+      requiredArea,
+      installationType,
+      moduleArea: moduleAreaValue,
+      modulePower: modulePowerValue
+    });
+  };
+
+  const resetDimension = () => {
+    setInstallationType('');
+    setModuleArea('');
+    setModulePower('');
+    setDimensionResult(null);
   };
 
   return (
@@ -173,6 +221,114 @@ const SolarCalculator = () => {
 
               <div className="text-xs text-muted-foreground p-3 bg-white/50 rounded">
                 <strong>Fórmula:</strong> kWh = kWp × HSP × Dias × Eficiência
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Bloco de Cálculo de Área */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Ruler className="h-5 w-5" />
+              Cálculo de Área
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="installation-type">Tipo de Instalação</Label>
+              <Select value={installationType} onValueChange={setInstallationType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ceramico">Cerâmico</SelectItem>
+                  <SelectItem value="metalico">Metálico</SelectItem>
+                  <SelectItem value="carport">Carport</SelectItem>
+                  <SelectItem value="solo">Solo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="module-area">Tamanho do Módulo (m²)</Label>
+              <Input
+                id="module-area"
+                type="number"
+                placeholder="Ex: 2.5"
+                value={moduleArea}
+                onChange={(e) => setModuleArea(e.target.value)}
+                className="text-lg"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="module-power">Potência do Módulo (W)</Label>
+              <Input
+                id="module-power"
+                type="number"
+                placeholder="Ex: 550"
+                value={modulePower}
+                onChange={(e) => setModulePower(e.target.value)}
+                className="text-lg"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <Button 
+                onClick={calculateDimension} 
+                className="flex-1 bg-gradient-energy hover:opacity-90 transition-opacity"
+                disabled={!kwp || !installationType || !moduleArea || !modulePower}
+              >
+                <Ruler className="h-4 w-4 mr-2" />
+                Dimensionamento
+              </Button>
+              <Button variant="outline" onClick={resetDimension}>
+                Limpar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {dimensionResult && (
+          <Card className="bg-gradient-to-br from-orange-50 to-yellow-50 border-accent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-accent">
+                <Ruler className="h-5 w-5" />
+                Dimensionamento do Sistema
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-accent">
+                    {dimensionResult.totalModules}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Módulos</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-primary">
+                    {dimensionResult.requiredArea.toFixed(1)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">m² necessários</div>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t">
+                <h4 className="font-semibold text-foreground">Especificações:</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">
+                    {dimensionResult.installationType.charAt(0).toUpperCase() + dimensionResult.installationType.slice(1)}
+                  </Badge>
+                  <Badge variant="outline">{dimensionResult.modulePower}W por módulo</Badge>
+                  <Badge variant="outline">{dimensionResult.moduleArea}m² por módulo</Badge>
+                </div>
+              </div>
+
+              <div className="text-xs text-muted-foreground p-3 bg-white/50 rounded">
+                <strong>Cálculo:</strong> {parseFloat(kwp) * 1000}W ÷ {dimensionResult.modulePower}W = {dimensionResult.totalModules} módulos × {dimensionResult.moduleArea}m² = {dimensionResult.requiredArea.toFixed(1)}m²
               </div>
             </CardContent>
           </Card>

@@ -131,7 +131,7 @@ const ModernCompass = () => {
             
             {heading !== null && (
               <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium">Orientação Atual</span>
@@ -140,12 +140,22 @@ const ModernCompass = () => {
                     {getCardinalDirection(heading)}
                   </Badge>
                 </div>
-                <div className="mt-2 text-center">
-                  <div className="text-2xl font-bold text-primary">
-                    {Math.round(heading)}°
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">
+                      {Math.round(heading)}°
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Graus
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {getCardinalDirectionFull(heading)}
+                  <div className="text-center">
+                    <div className="text-lg font-semibold text-accent">
+                      {getCardinalDirectionFull(heading)}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Direção
+                    </div>
                   </div>
                 </div>
               </div>

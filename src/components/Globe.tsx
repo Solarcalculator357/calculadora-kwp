@@ -40,14 +40,20 @@ const EarthSphere = ({ heading }: { heading: number | null }) => {
   const earthTexture = createEarthTexture();
 
   useFrame((state) => {
-    if (meshRef.current) {
-      // Slow rotation for the earth
+    if (meshRef.current && heading !== null) {
+      // Rotacionar o globo baseado no heading do dispositivo
+      // Inverter a rotação para que a Terra pareça se mover na direção oposta
+      meshRef.current.rotation.y = THREE.MathUtils.degToRad(heading) + (state.clock.elapsedTime * 0.05);
+    } else if (meshRef.current) {
+      // Rotação lenta padrão quando não há heading
       meshRef.current.rotation.y += 0.002;
     }
     
     if (compassArrowRef.current && heading !== null) {
-      // Update compass arrow based on device heading
-      compassArrowRef.current.rotation.y = THREE.MathUtils.degToRad(-heading);
+      // A seta sempre aponta para o Norte, então não rotaciona com o heading
+      // Mas oscila suavemente para indicar atividade
+      compassArrowRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      compassArrowRef.current.position.y = 2.5 + Math.sin(state.clock.elapsedTime * 3) * 0.1;
     }
   });
 

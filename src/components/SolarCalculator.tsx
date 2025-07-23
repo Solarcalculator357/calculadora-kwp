@@ -106,12 +106,12 @@ const SolarCalculator = () => {
                 value={efficiency}
                 onValueChange={setEfficiency}
                 max={95}
-                min={70}
+                min={10}
                 step={1}
                 className="w-full"
               />
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>70%</span>
+                <span>10%</span>
                 <span>95%</span>
               </div>
             </div>

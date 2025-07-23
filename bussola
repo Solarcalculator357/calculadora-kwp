@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bússola</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #121212;
+        color: #fff;
+        font-family: sans-serif;
+        flex-direction: column;
+      }
+      #compass {
+        width: 200px;
+        height: 200px;
+        background: url('https://upload.wikimedia.org/wikipedia/commons/4/42/Compass_Rose_English_North.svg') no-repeat center;
+        background-size: contain;
+        transform: rotate(0deg);
+        transition: transform 0.5s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Bússola</h2>
+    <div id="compass"></div>
+    <p id="heading">Carregando...</p>
+
+    <script>
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+        window.addEventListener('deviceorientation', handleOrientation, true);
+      }
+
+      function handleOrientation(event) {
+        let heading = event.alpha;
+        if (typeof event.webkitCompassHeading !== "undefined") {
+          heading = event.webkitCompassHeading; // Safari iOS
+        }
+
+        if (heading !== null) {
+          document.getElementById("compass").style.transform = `rotate(${-heading}deg)`;
+          document.getElementById("heading").textContent = `Direção: ${Math.round(heading)}°`;
+        } else {
+          document.getElementById("heading").textContent = "Bússola não suportada neste dispositivo.";
+        }
+      }
+    </script>
+  </body>
+</html>

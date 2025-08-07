@@ -18,19 +18,7 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
   const { signIn } = useAuth();
   const { toast } = useToast();
 
-  const LoginPage = () => {
-  const router = useRouter();
-  const { signIn } = useAuth();
-
-  const handleLogin = async (email: string, password: string) => {
-    const { error } = await signIn(email, password);
-    if (!error) {
-      router.push("/"); // Redireciona para a página inicial
-    } else {
-      // Trate o erro (exiba mensagem, etc)
-    }
-  };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -113,4 +101,4 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
     </Card>
   );
 };
-};
+

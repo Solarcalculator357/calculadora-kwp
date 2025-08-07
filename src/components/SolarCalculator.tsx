@@ -6,10 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calculator, Sun, Zap, TrendingUp, Ruler } from 'lucide-react';
+import { Calculator, Sun, Zap, TrendingUp, Ruler, ArrowLeftRight } from 'lucide-react';
 
 interface CalculationResult {
   monthlyKwh: number;
+  dailyKwh: number;
+  yearlyKwh: number;
+  efficiency: number;
+  hsp: number;
+}
+
+interface ReverseCalculationResult {
+  requiredKwp: number;
   dailyKwh: number;
   yearlyKwh: number;
   efficiency: number;
@@ -29,6 +37,12 @@ const SolarCalculator = () => {
   const [hsp, setHsp] = useState<number[]>([5.5]); // Horas de Sol Pleno
   const [efficiency, setEfficiency] = useState<number[]>([85]); // Eficiência do sistema
   const [result, setResult] = useState<CalculationResult | null>(null);
+  
+  // Estados para conversão reversa (kWh/mês → kWp)
+  const [monthlyKwh, setMonthlyKwh] = useState<string>('');
+  const [reverseHsp, setReverseHsp] = useState<number[]>([5.5]);
+  const [reverseEfficiency, setReverseEfficiency] = useState<number[]>([85]);
+  const [reverseResult, setReverseResult] = useState<ReverseCalculationResult | null>(null);
   
   // Estados para cálculo de área
   const [installationType, setInstallationType] = useState<string>('');
@@ -57,11 +71,39 @@ const SolarCalculator = () => {
     });
   };
 
+  const calculateReverse = () => {
+    const monthlyKwhValue = parseFloat(monthlyKwh);
+    if (isNaN(monthlyKwhValue) || monthlyKwhValue <= 0) return;
+
+    const hspValue = reverseHsp[0];
+    const efficiencyValue = reverseEfficiency[0] / 100;
+    
+    // Fórmula reversa: kWp = kWh/mês ÷ (HSP × 30 × eficiência)
+    const requiredKwp = monthlyKwhValue / (hspValue * 30 * efficiencyValue);
+    const dailyKwh = monthlyKwhValue / 30;
+    const yearlyKwh = monthlyKwhValue * 12;
+
+    setReverseResult({
+      requiredKwp,
+      dailyKwh,
+      yearlyKwh,
+      efficiency: reverseEfficiency[0],
+      hsp: hspValue
+    });
+  };
+
   const resetCalculator = () => {
     setKwp('');
     setResult(null);
     setHsp([5.5]);
     setEfficiency([85]);
+  };
+
+  const resetReverseCalculator = () => {
+    setMonthlyKwh('');
+    setReverseResult(null);
+    setReverseHsp([5.5]);
+    setReverseEfficiency([85]);
   };
 
   const calculateDimension = () => {
@@ -116,8 +158,11 @@ const SolarCalculator = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calculator className="h-5 w-5" />
-              Parâmetros do Sistema
+              kWp → kWh/mês
             </CardTitle>
+            <CardDescription>
+              Calcule a produção mensal a partir da potência instalada
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
@@ -180,12 +225,86 @@ const SolarCalculator = () => {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ArrowLeftRight className="h-5 w-5" />
+              kWh/mês → kWp
+            </CardTitle>
+            <CardDescription>
+              Calcule a potência necessária a partir do consumo mensal
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="monthly-kwh">Consumo Mensal (kWh/mês)</Label>
+              <Input
+                id="monthly-kwh"
+                type="number"
+                placeholder="Ex: 350"
+                value={monthlyKwh}
+                onChange={(e) => setMonthlyKwh(e.target.value)}
+                className="text-lg"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <Label>Horas de Sol Pleno (HSP): {reverseHsp[0]} h/dia</Label>
+              <Slider
+                value={reverseHsp}
+                onValueChange={setReverseHsp}
+                max={8}
+                min={3}
+                step={0.1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>3h</span>
+                <span>8h</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label>Eficiência do Sistema: {reverseEfficiency[0]}%</Label>
+              <Slider
+                value={reverseEfficiency}
+                onValueChange={setReverseEfficiency}
+                max={95}
+                min={10}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>10%</span>
+                <span>95%</span>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <Button 
+                onClick={calculateReverse} 
+                className="flex-1 bg-gradient-energy hover:opacity-90 transition-opacity"
+                disabled={!monthlyKwh}
+              >
+                <ArrowLeftRight className="h-4 w-4 mr-2" />
+                Calcular
+              </Button>
+              <Button variant="outline" onClick={resetReverseCalculator}>
+                Limpar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
         {result && (
           <Card className="bg-gradient-to-br from-green-50 to-blue-50 border-accent">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-accent">
                 <TrendingUp className="h-5 w-5" />
-                Resultados da Conversão
+                Produção de Energia
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -221,6 +340,52 @@ const SolarCalculator = () => {
 
               <div className="text-xs text-muted-foreground p-3 bg-white/50 rounded">
                 <strong>Fórmula:</strong> kWh = kWp × HSP × Dias × Eficiência
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {reverseResult && (
+          <Card className="bg-gradient-to-br from-orange-50 to-red-50 border-accent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-accent">
+                <ArrowLeftRight className="h-5 w-5" />
+                Potência Necessária
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                <div className="text-3xl font-bold text-primary">
+                  {reverseResult.requiredKwp.toFixed(2)}
+                </div>
+                <div className="text-sm text-muted-foreground">kWp necessários</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-accent">
+                    {reverseResult.dailyKwh.toFixed(1)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">kWh/dia</div>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="text-2xl font-bold text-secondary">
+                    {reverseResult.yearlyKwh.toFixed(0)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">kWh/ano</div>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t">
+                <h4 className="font-semibold text-foreground">Parâmetros Utilizados:</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary">HSP: {reverseResult.hsp}h</Badge>
+                  <Badge variant="outline">Eficiência: {reverseResult.efficiency}%</Badge>
+                </div>
+              </div>
+
+              <div className="text-xs text-muted-foreground p-3 bg-white/50 rounded">
+                <strong>Fórmula:</strong> kWp = kWh/mês ÷ (HSP × 30 × Eficiência)
               </div>
             </CardContent>
           </Card>

@@ -108,7 +108,8 @@ const SolarCalculator = () => {
   };
 
   const calculateDimension = () => {
-    const kwpValue = parseFloat(kwp);
+    // Usar a potência do cálculo reverso se disponível, senão usar a potência normal
+    const kwpValue = reverseResult ? reverseResult.requiredKwp : parseFloat(kwp);
     const moduleHeightValue = parseFloat(moduleHeight);
     const moduleWidthValue = parseFloat(moduleWidth);
     const modulePowerValue = parseFloat(modulePower);

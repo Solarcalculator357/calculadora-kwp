@@ -409,6 +409,19 @@ const SolarCalculator = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Indicador da potência que será usada */}
+            {(reverseResult || result) && (
+              <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="text-sm text-muted-foreground">Potência para dimensionamento:</div>
+                <div className="text-lg font-bold text-primary">
+                  {reverseResult ? reverseResult.requiredKwp.toFixed(2) : parseFloat(kwp || '0').toFixed(2)} kWp
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {reverseResult ? 'Obtida do cálculo kWh/mês → kWp' : 'Obtida do cálculo kWp → kWh/mês'}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="installation-type">Tipo de Instalação</Label>
               <Select value={installationType} onValueChange={setInstallationType}>
@@ -474,7 +487,7 @@ const SolarCalculator = () => {
               <Button 
                 onClick={calculateDimension} 
                 className="flex-1 bg-gradient-energy hover:opacity-90 transition-opacity"
-                disabled={!kwp || !installationType || !moduleHeight || !moduleWidth || !modulePower}
+                disabled={!(reverseResult || kwp) || !installationType || !moduleHeight || !moduleWidth || !modulePower}
               >
                 <Ruler className="h-4 w-4 mr-2" />
                 Dimensionamento

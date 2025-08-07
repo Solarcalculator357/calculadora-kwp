@@ -46,7 +46,8 @@ const SolarCalculator = () => {
   
   // Estados para cálculo de área
   const [installationType, setInstallationType] = useState<string>('');
-  const [moduleArea, setModuleArea] = useState<string>('');
+  const [moduleHeight, setModuleHeight] = useState<string>('');
+  const [moduleWidth, setModuleWidth] = useState<string>('');
   const [modulePower, setModulePower] = useState<string>('');
   const [dimensionResult, setDimensionResult] = useState<DimensionResult | null>(null);
 
@@ -108,12 +109,16 @@ const SolarCalculator = () => {
 
   const calculateDimension = () => {
     const kwpValue = parseFloat(kwp);
-    const moduleAreaValue = parseFloat(moduleArea);
+    const moduleHeightValue = parseFloat(moduleHeight);
+    const moduleWidthValue = parseFloat(moduleWidth);
     const modulePowerValue = parseFloat(modulePower);
     
-    if (isNaN(kwpValue) || isNaN(moduleAreaValue) || isNaN(modulePowerValue) || 
-        kwpValue <= 0 || moduleAreaValue <= 0 || modulePowerValue <= 0 || !installationType) return;
+    if (isNaN(kwpValue) || isNaN(moduleHeightValue) || isNaN(moduleWidthValue) || isNaN(modulePowerValue) || 
+        kwpValue <= 0 || moduleHeightValue <= 0 || moduleWidthValue <= 0 || modulePowerValue <= 0 || !installationType) return;
 
+    // Calcular área do módulo
+    const moduleArea = moduleHeightValue * moduleWidthValue;
+    
     // Converter kWp para Watts
     const totalPowerWatts = kwpValue * 1000;
     
@@ -121,20 +126,21 @@ const SolarCalculator = () => {
     const totalModules = Math.ceil(totalPowerWatts / modulePowerValue);
     
     // Calcular área necessária total
-    const requiredArea = totalModules * moduleAreaValue;
+    const requiredArea = totalModules * moduleArea;
 
     setDimensionResult({
       totalModules,
       requiredArea,
       installationType,
-      moduleArea: moduleAreaValue,
+      moduleArea,
       modulePower: modulePowerValue
     });
   };
 
   const resetDimension = () => {
     setInstallationType('');
-    setModuleArea('');
+    setModuleHeight('');
+    setModuleWidth('');
     setModulePower('');
     setDimensionResult(null);
   };
@@ -417,17 +423,39 @@ const SolarCalculator = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="module-area">Tamanho do Módulo (m²)</Label>
-              <Input
-                id="module-area"
-                type="number"
-                placeholder="Ex: 2.5"
-                value={moduleArea}
-                onChange={(e) => setModuleArea(e.target.value)}
-                className="text-lg"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="module-height">Altura do Módulo (m)</Label>
+                <Input
+                  id="module-height"
+                  type="number"
+                  placeholder="Ex: 2.0"
+                  value={moduleHeight}
+                  onChange={(e) => setModuleHeight(e.target.value)}
+                  className="text-lg"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="module-width">Largura do Módulo (m)</Label>
+                <Input
+                  id="module-width"
+                  type="number"
+                  placeholder="Ex: 1.2"
+                  value={moduleWidth}
+                  onChange={(e) => setModuleWidth(e.target.value)}
+                  className="text-lg"
+                />
+              </div>
             </div>
+
+            {moduleHeight && moduleWidth && (
+              <div className="p-3 bg-muted rounded-lg">
+                <div className="text-sm text-muted-foreground">Área do módulo:</div>
+                <div className="text-lg font-semibold text-primary">
+                  {(parseFloat(moduleHeight) * parseFloat(moduleWidth)).toFixed(2)} m²
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="module-power">Potência do Módulo (W)</Label>
@@ -445,7 +473,7 @@ const SolarCalculator = () => {
               <Button 
                 onClick={calculateDimension} 
                 className="flex-1 bg-gradient-energy hover:opacity-90 transition-opacity"
-                disabled={!kwp || !installationType || !moduleArea || !modulePower}
+                disabled={!kwp || !installationType || !moduleHeight || !moduleWidth || !modulePower}
               >
                 <Ruler className="h-4 w-4 mr-2" />
                 Dimensionamento
@@ -493,7 +521,7 @@ const SolarCalculator = () => {
               </div>
 
               <div className="text-xs text-muted-foreground p-3 bg-white/50 rounded">
-                <strong>Cálculo:</strong> {parseFloat(kwp) * 1000}W ÷ {dimensionResult.modulePower}W = {dimensionResult.totalModules} módulos × {dimensionResult.moduleArea}m² = {dimensionResult.requiredArea.toFixed(1)}m²
+                <strong>Cálculo:</strong> {parseFloat(kwp) * 1000}W ÷ {dimensionResult.modulePower}W = {dimensionResult.totalModules} módulos × {dimensionResult.moduleArea.toFixed(2)}m² = {dimensionResult.requiredArea.toFixed(1)}m²
               </div>
             </CardContent>
           </Card>

@@ -1,4 +1,7 @@
+'use client'; // necessário no App Router
+
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // 👈 IMPORTANTE
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,6 +19,7 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const { toast } = useToast();
+  const router = useRouter(); // 👈 hook de navegação
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +41,9 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
           title: "Login realizado com sucesso!",
           description: "Bem-vindo de volta.",
         });
+
+        // ✅ Redirecionamento para página inicial (Index.tsx)
+        router.push('/');
       }
     } catch (error) {
       toast({

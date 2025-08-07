@@ -1,8 +1,16 @@
 import SolarCalculator from '@/components/SolarCalculator';
 import ModernCompass from '@/components/ModernCompass';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 import solarHero from '@/assets/solar-hero.jpg';
 
 const Index = () => {
+  const { signOut, user } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="relative overflow-hidden bg-gradient-solar">
@@ -14,8 +22,19 @@ const Index = () => {
           />
         </div>
         <div className="relative container mx-auto px-4 py-16">
-          <div className="text-center text-primary-foreground mb-8">
+          <div className="flex justify-between items-center mb-8">
+            <div className="text-center text-primary-foreground flex-1">
+              <h1 className="text-4xl font-bold mb-2">Calculadora Solar</h1>
+              <p className="text-xl opacity-90">Bem-vindo, {user?.email}</p>
             </div>
+            <Button 
+              onClick={handleSignOut}
+              variant="outline"
+              className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+            >
+              Sair
+            </Button>
+          </div>
         </div>
       </div>
       <div className="container mx-auto px-4 py-12 space-y-12">

@@ -155,7 +155,7 @@ const SolarCalculator = () => {
             <CardTitle className="text-3xl font-bold">Calculadora Solar</CardTitle>
           </div>
           <CardDescription className="text-primary-foreground/90 text-lg">
-            Converta kWp em kWh/mês para estimar a produção de energia solar
+            Converta a medida de capacidade para estimar a produção de energia solar
           </CardDescription>
         </CardHeader>
       </Card>

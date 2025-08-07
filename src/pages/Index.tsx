@@ -15,13 +15,7 @@ const Index = () => {
         </div>
         <div className="relative container mx-auto px-4 py-16">
           <div className="text-center text-primary-foreground mb-8">
-            <h1 className="text-5xl font-bold mb-4">
-              Calculadora Solar
-            </h1>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Calcule facilmente a produção mensal estimada do seu sistema de energia solar
-            </p>
-          </div>
+            </div>
         </div>
       </div>
       <div className="container mx-auto px-4 py-12 space-y-12">

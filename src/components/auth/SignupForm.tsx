@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,8 @@ interface SignupFormProps {
 }
 
 export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,7 +46,7 @@ export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
     setLoading(true);
 
     try {
-      const { error } = await signUp(email, password, fullName, phone);
+      const { error } = await signUp(email, password, firstName, lastName, phone);
       
       if (error) {
         if (error.message.includes("User already registered")) {
@@ -88,14 +90,25 @@ export const SignupForm = ({ onToggleMode }: SignupFormProps) => {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Nome Completo</Label>
+            <Label htmlFor="firstName">Primeiro Nome</Label>
             <Input
-              id="fullName"
+              id="firstName"
               type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               required
-              placeholder="Seu nome completo"
+              placeholder="Seu primeiro nome"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Sobrenome</Label>
+            <Input
+              id="lastName"
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              placeholder="Seu sobrenome"
             />
           </div>
           <div className="space-y-2">

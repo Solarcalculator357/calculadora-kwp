@@ -2,11 +2,15 @@
 import SolarCalculator from '@/components/SolarCalculator';
 import ModernCompass from '@/components/ModernCompass';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { LayoutDashboard } from 'lucide-react';
 import solarHero from '@/assets/solar-hero.jpg';
 
 const Index = () => {
   const { signOut, user } = useAuth();
+  const { isAdmin } = useAdmin();
 
   const handleSignOut = async () => {
     await signOut();
@@ -41,13 +45,27 @@ const Index = () => {
               <h1 className="text-4xl font-bold mb-2">Calculadora Solar</h1>
               <p className="text-xl opacity-90">Bem-vindo, {getFirstName()}</p>
             </div>
-            <Button 
-              onClick={handleSignOut}
-              variant="outline"
-              className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
-            >
-              Sair
-            </Button>
+            <div className="flex gap-2">
+              {isAdmin && (
+                <Button 
+                  asChild
+                  variant="outline"
+                  className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                >
+                  <Link to="/dashboard">
+                    <LayoutDashboard className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </Button>
+              )}
+              <Button 
+                onClick={handleSignOut}
+                variant="outline"
+                className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </div>

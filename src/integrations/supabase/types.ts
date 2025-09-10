@@ -7,13 +7,40 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
   }
   public: {
     Tables: {
+      campanhas: {
+        Row: {
+          anexo: string | null
+          created_at: string
+          descricao: string | null
+          id: number
+          mensagem: string | null
+          titulo: string | null
+        }
+        Insert: {
+          anexo?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: number
+          mensagem?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          anexo?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: number
+          mensagem?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -41,15 +68,76 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string
+          user_id: string
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+          user_id: string
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -176,6 +264,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

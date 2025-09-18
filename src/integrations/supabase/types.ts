@@ -19,6 +19,7 @@ export type Database = {
           anexo: string | null
           created_at: string
           descricao: string | null
+          destinatario: string | null
           id: number
           mensagem: string | null
           titulo: string | null
@@ -27,6 +28,7 @@ export type Database = {
           anexo?: string | null
           created_at?: string
           descricao?: string | null
+          destinatario?: string | null
           id?: number
           mensagem?: string | null
           titulo?: string | null
@@ -35,6 +37,7 @@ export type Database = {
           anexo?: string | null
           created_at?: string
           descricao?: string | null
+          destinatario?: string | null
           id?: number
           mensagem?: string | null
           titulo?: string | null

@@ -3,10 +3,18 @@ import SolarCalculator from '@/components/SolarCalculator';
 import ModernCompass from '@/components/ModernCompass';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { LogIn, LogOut, Settings } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import solarHero from '@/assets/solar-hero.jpg';
 
 const Index = () => {
+  const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -25,16 +33,41 @@ const Index = () => {
               <p className="text-xl opacity-90">Descubra o potencial solar da sua região</p>
             </div>
             <div className="flex gap-2">
-              <Button 
-                asChild
-                variant="outline"
-                className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
-              >
-                <Link to="/auth">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Login
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Button 
+                      asChild
+                      variant="outline"
+                      className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                    >
+                      <Link to="/dashboard">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={handleSignOut}
+                    variant="outline"
+                    className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  asChild
+                  variant="outline"
+                  className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                >
+                  <Link to="/auth">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Login
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -46,18 +46,6 @@ const Index = () => {
               <p className="text-xl opacity-90">Bem-vindo, {getFirstName()}</p>
             </div>
             <div className="flex gap-2">
-              {isAdmin && (
-                <Button 
-                  asChild
-                  variant="outline"
-                  className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                >
-                  <Link to="/dashboard">
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Link>
-                </Button>
-              )}
               <Button 
                 onClick={handleSignOut}
                 variant="outline"

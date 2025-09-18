@@ -9,10 +9,10 @@ const Auth = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redireciona usuários autenticados para o dashboard
+  // Redireciona usuários autenticados para a página principal
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [user, loading, navigate]);
 

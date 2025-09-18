@@ -1,12 +1,33 @@
 
 import SolarCalculator from '@/components/SolarCalculator';
 import ModernCompass from '@/components/ModernCompass';
+import { useAuth } from '@/hooks/useAuth';
+import { useAdmin } from '@/hooks/useAdmin';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
 import solarHero from '@/assets/solar-hero.jpg';
 
 const Index = () => {
+  const { signOut, user } = useAuth();
+  const { isAdmin } = useAdmin();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  // Extrai o primeiro nome dos metadados do usuário
+  const getFirstName = () => {
+    if (user?.user_metadata?.first_name) {
+      return user.user_metadata.first_name;
+    }
+    // Fallback para o nome completo se existir
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name.split(' ')[0];
+    }
+    // Último fallback para o email
+    return user?.email?.split('@')[0] || 'Usuário';
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -22,18 +43,15 @@ const Index = () => {
           <div className="flex justify-between items-center mb-8">
             <div className="text-center text-primary-foreground flex-1">
               <h1 className="text-4xl font-bold mb-2">Calculadora Solar</h1>
-              <p className="text-xl opacity-90">Descubra o potencial solar da sua região</p>
+              <p className="text-xl opacity-90">Bem-vindo, {getFirstName()}</p>
             </div>
             <div className="flex gap-2">
               <Button 
-                asChild
+                onClick={handleSignOut}
                 variant="outline"
                 className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
               >
-                <Link to="/auth">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Login
-                </Link>
+                Sair
               </Button>
             </div>
           </div>

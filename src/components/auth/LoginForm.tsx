@@ -40,8 +40,8 @@ export const LoginForm = ({ onToggleMode }: LoginFormProps) => {
           title: "Login realizado com sucesso!",
           description: "Bem-vindo de volta.",
         });
-        // Redireciona para o dashboard
-        navigate('/dashboard');
+        // Redireciona para a página principal
+        navigate('/');
       }
     } catch (error) {
       toast({
